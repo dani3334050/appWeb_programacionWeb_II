@@ -88,7 +88,7 @@ const OrdersPage = () => {
                                         {/* Since backend snippets didn't show the List serializer, I'll be safe */}
                                         {order.vehicle_plate || `Vehículo ${order.vehicle_id}`}
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">${order.total_price.toFixed(2)}</td>
+                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">${(order.total || 0).toFixed(2)}</td>
                                     <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                         {getStatusBadge(order.status)}
                                     </td>

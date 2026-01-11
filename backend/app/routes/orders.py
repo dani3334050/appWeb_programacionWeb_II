@@ -104,6 +104,28 @@ def create_order():
         return jsonify({"msg": f"Error al crear orden: {str(e)}"}), 500
 
 # ==============================================================================
+# Endpoint: Listar Órdenes
+# ==============================================================================
+@orders_bp.route('/orders', methods=['GET'])
+@jwt_required()
+def get_orders():
+    """
+    Obtiene la lista de todas las órdenes de trabajo.
+    """
+    try:
+        orders = OrderService.get_all_orders()
+        response = []
+        for order in orders:
+             order_dict = order.to_dict()
+             # Enriquecer con info básica de vehiculo para la tabla
+             if order.vehicle:
+                 order_dict['vehicle_plate'] = order.vehicle.plate
+             response.append(order_dict)
+        return jsonify(response), 200
+    except Exception as e:
+        return jsonify({"msg": f"Error al obtener órdenes: {str(e)}"}), 500
+
+# ==============================================================================
 # Endpoint: Agregar Item a Orden
 # ==============================================================================
 @orders_bp.route('/orders/<int:order_id>/items', methods=['POST'])

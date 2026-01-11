@@ -140,6 +140,17 @@ class OrderService:
         return WorkOrder.query.get(order_id)
 
     @staticmethod
+    def get_all_orders():
+        """
+        Obtiene todas las órdenes registradas, ordenadas por fecha de creación descendente.
+        
+        Returns:
+            list[WorkOrder]: Lista de todas las órdenes.
+        """
+        return WorkOrder.query.order_by(WorkOrder.created_at.desc()).all()
+
+
+    @staticmethod
     def update_order_status(order_id, new_status):
         """
         Actualiza el estado de una orden.
