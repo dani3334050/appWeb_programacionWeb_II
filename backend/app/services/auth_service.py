@@ -1,5 +1,6 @@
 from app import db
 from app.models import User
+# Client import is handled inside register_user to avoid circular dependency
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
@@ -45,6 +46,19 @@ class AuthService:
         )
 
         db.session.add(new_user)
+        db.session.flush() # Para obtener el ID del usuario recién creado
+
+        # Si el rol es cliente, creamos su registro en la tabla Client
+        if role == 'client':
+            from app.models import Client
+            new_client = Client(
+                user_id=new_user.id,
+                first_name=username, # Default, luego pueden editar
+                last_name="",
+                email=email
+            )
+            db.session.add(new_client)
+
         db.session.commit()
         return new_user
 

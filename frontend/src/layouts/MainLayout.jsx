@@ -65,11 +65,7 @@ const MainLayout = () => {
                         label="Técnicos"
                         icon={<Wrench size={20} />}
                     />
-                    <SidebarItem
-                        to="/workers"
-                        label="Trabajadores"
-                        icon={<Briefcase size={20} />}
-                    />
+
 
                     <div className="px-6 mt-8 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Negocio</div>
                     <SidebarItem

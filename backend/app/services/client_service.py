@@ -102,3 +102,75 @@ class ClientService:
         if not client:
             raise ValueError("Cliente no encontrado")
         return client.vehicles
+    
+    @staticmethod
+    def get_all_vehicles():
+        """
+        Retorna todos los vehículos registrados en el sistema,
+        incluyendo la información de su dueño.
+        """
+        return Vehicle.query.all()
+
+    @staticmethod
+    def update_vehicle(vehicle_id, data):
+        """
+        Actualiza los datos de un vehículo existente.
+
+        Args:
+            vehicle_id (int): ID del vehículo.
+            data (dict): Diccionario con los campos a actualizar.
+
+        Returns:
+            Vehicle: Vehículo actualizado.
+
+        Raises:
+            ValueError: Si el vehículo no existe o hay conflictos de unicidad.
+        """
+        vehicle = Vehicle.query.get(vehicle_id)
+        if not vehicle:
+            raise ValueError("Vehículo no encontrado")
+
+        # Actualizar campos permitidos
+        if 'plate' in data:
+            vehicle.plate = data['plate']
+        if 'brand' in data:
+            vehicle.brand = data['brand']
+        if 'model' in data:
+            vehicle.model = data['model']
+        if 'year' in data:
+            vehicle.year = data['year']
+        if 'vin' in data:
+            vehicle.vin = data['vin']
+        # Nota: Permitir cambiar el cliente (client_id) podría ser útil, 
+        # pero requiere validación extra. Lo incluiremos si se solicita.
+        if 'client_id' in data:
+            # Validar que el cliente exista
+            client = Client.query.get(data['client_id'])
+            if not client:
+                raise ValueError("El cliente asignado no existe")
+            vehicle.client_id = data['client_id']
+
+        try:
+            db.session.commit()
+            return vehicle
+        except IntegrityError:
+            db.session.rollback()
+            raise ValueError("La placa o el VIN ya existen en otro vehículo")
+
+    @staticmethod
+    def delete_vehicle(vehicle_id):
+        """
+        Elimina un vehículo del sistema.
+
+        Args:
+            vehicle_id (int): ID del vehículo.
+
+        Raises:
+            ValueError: Si el vehículo no existe.
+        """
+        vehicle = Vehicle.query.get(vehicle_id)
+        if not vehicle:
+            raise ValueError("Vehículo no encontrado")
+
+        db.session.delete(vehicle)
+        db.session.commit()

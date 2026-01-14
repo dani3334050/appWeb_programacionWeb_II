@@ -35,4 +35,13 @@ def create_app():
     from app.routes.payments import payments_bp
     app.register_blueprint(payments_bp)
 
+    from app.routes.vehicles import vehicles_bp
+    app.register_blueprint(vehicles_bp)
+
+    from app.routes.marketplace import marketplace_bp
+    app.register_blueprint(marketplace_bp)
+
+    from app.routes.users import users_bp
+    app.register_blueprint(users_bp)
+
     return app

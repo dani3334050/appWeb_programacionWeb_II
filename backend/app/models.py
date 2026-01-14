@@ -74,6 +74,7 @@ class Client(db.Model):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) # Link to User (Login)
     first_name = db.Column(db.String(50), nullable=False)  # Nombre
     last_name = db.Column(db.String(50), nullable=False)   # Apellido
     email = db.Column(db.String(120), unique=True, nullable=True) # Email opcional pero único si existe
@@ -132,7 +133,7 @@ class Vehicle(db.Model):
     vin = db.Column(db.String(50), unique=True, nullable=True)    # Número de chasis (VIN)
 
     # Relación: Un vehículo puede tener muchas órdenes de trabajo (historial)
-    work_orders = db.relationship('WorkOrder', backref='vehicle', lazy=True)
+    work_orders = db.relationship('WorkOrder', backref='vehicle', lazy=True, cascade="all, delete-orphan")
 
     def to_dict(self):
         """
@@ -326,3 +327,56 @@ class Payment(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
+
+# ==============================================================================
+# Modelo CarListing (Marketplace)
+# ==============================================================================
+class CarListing(db.Model):
+    """
+    Representa un vehículo en venta en el Marketplace.
+    
+    Atributos:
+        id (int): ID único.
+        user_id (int): Vendedor (Usuario).
+        title (str): Título del anuncio.
+        brand (str): Marca.
+        model (str): Modelo.
+        year (int): Año.
+        price (float): Precio de venta.
+        description (str): Descripción.
+        image_url (str): URL de la imagen principal.
+        status (str): 'available', 'sold'.
+        created_at (datetime): Fecha de publicación.
+    """
+    __tablename__ = 'car_listings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
+    brand = db.Column(db.String(50), nullable=False)
+    model = db.Column(db.String(50), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.String(255), nullable=True) # Para la foto
+    status = db.Column(db.String(20), default='available') # available, sold
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relación con el vendedor
+    seller = db.relationship('User', backref=db.backref('listings', lazy=True))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'seller_name': self.seller.username if self.seller else 'Unknown',
+            'title': self.title,
+            'brand': self.brand,
+            'model': self.model,
+            'year': self.year,
+            'price': self.price,
+            'description': self.description,
+            'image_url': self.image_url,
+            'status': self.status,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
