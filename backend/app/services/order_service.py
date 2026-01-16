@@ -56,6 +56,51 @@ class OrderService:
         return Service.query.get(service_id)
 
     @staticmethod
+    def update_service(service_id, name=None, base_price=None, description=None):
+        """
+        Actualiza campos del servicio indicado.
+
+        Args:
+            service_id (int): ID del servicio a actualizar.
+            name (str | None): Nuevo nombre.
+            base_price (float | None): Nuevo precio base.
+            description (str | None): Nueva descripción.
+
+        Returns:
+            Service: Servicio actualizado.
+
+        Raises:
+            ValueError: Si el servicio no existe.
+        """
+        service = Service.query.get(service_id)
+        if not service:
+            raise ValueError("Servicio no encontrado")
+
+        if name is not None:
+            service.name = name
+        if base_price is not None:
+            service.base_price = float(base_price)
+        if description is not None:
+            service.description = description
+
+        db.session.commit()
+        return service
+
+    @staticmethod
+    def delete_service(service_id):
+        """
+        Elimina un servicio por ID.
+
+        Raises:
+            ValueError: Si el servicio no existe.
+        """
+        service = Service.query.get(service_id)
+        if not service:
+            raise ValueError("Servicio no encontrado")
+        db.session.delete(service)
+        db.session.commit()
+
+    @staticmethod
     def create_order(vehicle_id, user_id):
         """
         Crea una nueva orden de trabajo vacía para un vehículo.

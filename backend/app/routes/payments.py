@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required
 # ==============================================================================
 # Capa de RUTAS (Controlador) - Payments
 # ==============================================================================
-payments_bp = Blueprint('payments', __name__, url_prefix='/payments')
+payments_bp = Blueprint('payments', __name__, url_prefix='/api/payments')
 
 # ==============================================================================
 # Endpoint: Crear Pago

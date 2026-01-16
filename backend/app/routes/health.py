@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify
 # que el backend está corriendo y respondiendo.
 # ==============================================================================
 
-health_bp = Blueprint("health", __name__)
+health_bp = Blueprint("health", __name__, url_prefix='/api')
 
 @health_bp.route("/health", methods=["GET"])
 def health():

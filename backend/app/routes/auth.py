@@ -10,7 +10,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 # Delega toda la lógica de validación de negocio y BD a AuthService.
 # ==============================================================================
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
 # ==============================================================================
 # Endpoint: Registro de Usuario

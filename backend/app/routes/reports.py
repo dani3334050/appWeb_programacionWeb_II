@@ -9,7 +9,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 # Endpoints de solo lectura para dashboards y métricas.
 # ==============================================================================
 
-reports_bp = Blueprint('reports', __name__, url_prefix='/reports')
+reports_bp = Blueprint('reports', __name__, url_prefix='/api/reports')
 
 # ==============================================================================
 # Endpoint: Dashboard (Métricas)

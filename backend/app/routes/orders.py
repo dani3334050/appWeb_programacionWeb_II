@@ -13,7 +13,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 # 4. Retornar la respuesta HTTP adecuada (JSON + Status Code)
 # ==============================================================================
 
-orders_bp = Blueprint('orders', __name__)
+orders_bp = Blueprint('orders', __name__, url_prefix='/api')
 
 # ==============================================================================
 # Endpoint: Crear Servicio (Solo Admin)
@@ -67,6 +67,59 @@ def get_services():
     """
     services = OrderService.get_all_services()
     return jsonify([s.to_dict() for s in services]), 200
+
+# ==============================================================================
+# Endpoint: Detalle de Servicio
+# ==============================================================================
+@orders_bp.route('/services/<int:service_id>', methods=['GET'])
+def get_service(service_id):
+    service = OrderService.get_service_by_id(service_id)
+    if not service:
+        return jsonify({"msg": "Servicio no encontrado"}), 404
+    return jsonify(service.to_dict()), 200
+
+# ==============================================================================
+# Endpoint: Actualizar Servicio (Solo Admin)
+# ==============================================================================
+@orders_bp.route('/services/<int:service_id>', methods=['PUT'])
+@jwt_required()
+def update_service(service_id):
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user or user.role != 'admin':
+        return jsonify({"msg": "Acceso denegado. Se requieren permisos de administrador"}), 403
+
+    data = request.get_json() or {}
+    try:
+        updated = OrderService.update_service(
+            service_id,
+            name=data.get('name'),
+            base_price=data.get('base_price'),
+            description=data.get('description')
+        )
+        return jsonify({"msg": "Servicio actualizado", "service": updated.to_dict()}), 200
+    except ValueError as e:
+        return jsonify({"msg": str(e)}), 404
+    except Exception as e:
+        return jsonify({"msg": f"Error al actualizar servicio: {str(e)}"}), 500
+
+# ==============================================================================
+# Endpoint: Eliminar Servicio (Solo Admin)
+# ==============================================================================
+@orders_bp.route('/services/<int:service_id>', methods=['DELETE'])
+@jwt_required()
+def delete_service(service_id):
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user or user.role != 'admin':
+        return jsonify({"msg": "Acceso denegado. Se requieren permisos de administrador"}), 403
+    try:
+        OrderService.delete_service(service_id)
+        return jsonify({"msg": "Servicio eliminado"}), 200
+    except ValueError as e:
+        return jsonify({"msg": str(e)}), 404
+    except Exception as e:
+        return jsonify({"msg": f"Error al eliminar servicio: {str(e)}"}), 500
 
 # ==============================================================================
 # Endpoint: Crear Orden de Trabajo

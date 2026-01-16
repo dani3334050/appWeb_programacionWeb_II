@@ -51,6 +51,57 @@ class ClientService:
         return Client.query.get(client_id)
 
     @staticmethod
+    def update_client(client_id, data):
+        """
+        Actualiza los datos de un cliente.
+
+        Args:
+            client_id (int): ID del cliente.
+            data (dict): Campos a actualizar (first_name, last_name, email, phone, address).
+
+        Returns:
+            Client: Cliente actualizado.
+
+        Raises:
+            ValueError: Si el cliente no existe o email duplicado.
+        """
+        client = Client.query.get(client_id)
+        if not client:
+            raise ValueError("Cliente no encontrado")
+
+        if 'first_name' in data:
+            client.first_name = data['first_name']
+        if 'last_name' in data:
+            client.last_name = data['last_name']
+        if 'email' in data:
+            client.email = data['email']
+        if 'phone' in data:
+            client.phone = data['phone']
+        if 'address' in data:
+            client.address = data['address']
+
+        try:
+            db.session.commit()
+            return client
+        except IntegrityError:
+            db.session.rollback()
+            raise ValueError("El email ya está registrado para otro cliente")
+
+    @staticmethod
+    def delete_client(client_id):
+        """
+        Elimina un cliente y, por cascada, sus vehículos si la relación lo permite.
+
+        Raises:
+            ValueError: Si el cliente no existe.
+        """
+        client = Client.query.get(client_id)
+        if not client:
+            raise ValueError("Cliente no encontrado")
+        db.session.delete(client)
+        db.session.commit()
+
+    @staticmethod
     def add_vehicle(client_id, plate, brand, model, year, vin=None):
         """
         Asocia un vehículo a un cliente.
@@ -110,6 +161,11 @@ class ClientService:
         incluyendo la información de su dueño.
         """
         return Vehicle.query.all()
+
+    @staticmethod
+    def get_vehicle_by_id(vehicle_id):
+        """Retorna un vehículo por ID."""
+        return Vehicle.query.get(vehicle_id)
 
     @staticmethod
     def update_vehicle(vehicle_id, data):

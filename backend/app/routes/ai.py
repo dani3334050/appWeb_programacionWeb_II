@@ -7,7 +7,7 @@ from flask import Blueprint, request, jsonify
 # Futura integración con LangChain / OpenAI.
 # ==============================================================================
 
-ai_bp = Blueprint('ai', __name__, url_prefix='/ai')
+ai_bp = Blueprint('ai', __name__, url_prefix='/api/ai')
 
 # ==============================================================================
 # Endpoint: Preguntar a la IA (Mock)
